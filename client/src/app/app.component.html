@@ -1,0 +1,123 @@
+<div style="text-align:center" [style.display]="isDisplay? 'block': 'none'">
+  <h1>
+    Jira Sprint Card Generator !!
+  </h1>
+</div>
+<div style="text-align:center" [style.display]="isError? 'block': 'none'" class="alert alert-danger">
+  <h5>Error : {{error}}</h5>
+</div>
+<div class="row custom-row" [style.display]="isDisplay? 'block': 'none'">
+  <div class="col-sm-5 custom-container jumbotron">
+
+    <form [formGroup]="loginForm" (submit)="onSubmit()">
+      <div class="form-group">
+        <label for="url">Jira Url</label>
+        <div [ngClass]="{'alert alert-danger':loginForm.controls.url.invalid && loginForm.controls.url.dirty, 'has-success': !loginForm.controls.url.errors}">
+          <input type="text" name="url" class="form-control" formControlName="url" />
+          <ul class="help-block">
+            <li *ngIf="(loginForm.controls.url.errors?.required && loginForm.controls.url.dirty)">
+              Required
+            </li>
+            <li *ngIf="(loginForm.controls.url.errors?.pattern && loginForm.controls.url.dirty)">
+              Url must start with http:// or https://
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="username">Jira Username</label>
+        <div [ngClass]="{'alert alert-danger':(loginForm.controls.username.errors && loginForm.controls.username.dirty), 'has-success': !loginForm.controls.username.errors}">
+          <input type="text" name="username" class="form-control" formControlName="username" />
+          <ul class="help-block">
+            <li *ngIf="(loginForm.controls.username.errors?.required && loginForm.controls.username.dirty)">
+              Required
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div [ngClass]="{'alert alert-danger':(loginForm.controls.password.errors && loginForm.controls.password.dirty), 'has-success': !loginForm.controls.password.errors}">
+          <input type="password" name="password" class="form-control" formControlName="password" />
+          <ul class="help-block">
+            <li *ngIf="(loginForm.controls.password.errors?.required && loginForm.controls.password.dirty)">
+              Required
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="jql">Jira Query (JQL)</label>
+        <div [ngClass]="{'alert alert-danger':(loginForm.controls.jql.errors && loginForm.controls.jql.dirty), 'has-success': !loginForm.controls.jql.errors}">
+          <input type="text" name="jql" class="form-control" formControlName="jql" />
+          <ul class="help-block">
+            <li *ngIf="(loginForm.controls.jql.errors?.required && loginForm.controls.jql.dirty)">
+              Required
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <input [disabled]="!loginForm.valid" type="submit" value="submit" class="btn btn-primary" />
+    </form>
+
+  </div>
+
+</div>
+
+<div class="row custom-row doNotPrint" [style.display]="!isDisplay? 'block': 'none'">
+  <div class="col-sm-5 custom-container jumbotron">
+    <section style="text-align:center">
+      <h3> Sprint Card Details</h3>
+    </section>
+    <form [formGroup]="listForm" (submit)="onAdd()">
+      <div class="form-group">
+        <label for="addfield" class="col-md-12" style="float : left">Add Story Field to Display in Card (Only if your field is not listed below)</label>
+        <input type="text" name="addfield" class="form-control col-md-10" formControlName="addfield" style="float : left" placeholder="Enter the Json key as shown below like 'fields.summary'"
+        />
+        <input [disabled]="!listForm.valid" type="submit" value="Add" class="btn btn-primary col-md-2" />
+      </div>
+    </form>
+    <h6> Below fields data will print in Card :</h6>
+    <ul>
+      <li *ngFor="let field of storyFields">{{field}}</li>
+    </ul>
+    <!-- <dual-list  [source]="source" [(destination)]="confirmed"></dual-list> -->
+    <form [formGroup]="cardForm" (submit)="onGenerate()" (button)="onPreview()">
+      <h5 style="text-align:left"> Card Colors : </h5>
+      <div class="form-group col-sm-4" style="float : left">
+        <label for="userstoryColor">User Story</label>
+        <img src="assets\\img\\UserStory.png" width="10%">
+        <input type="color" name="userstoryColor" class="form-control  col-md-3" formControlName="userstoryColor" style="height : 2.25rem;"
+        />
+      </div>
+      <div class="form-group col-sm-4" style="float : left">
+        <label for="subtaskColor">SubTask</label>
+        <img src="assets\\img\\SubTask.png" width="10%">
+        <input type="color" name="subtaskColor" class="form-control col-md-3" formControlName="subtaskColor" style="height : 2.25rem;"
+        />
+      </div>
+      <div class="form-group col-md-4" style="float : left">
+        <label for="defectColor">Defect</label>
+        <img src="assets\\img\\Defect.png" width="10%">
+        <input type="color" name="defectColor" class="form-control col-md-3" formControlName="defectColor" style="height : 2.25rem;"
+        />
+      </div>
+      <!-- <input [disabled]="!cardForm.valid" type="button" value="Preview" class="btn btn-info" />  This will be enabled after providing user to resize the card. can be done by adding text box to enter and show the card in preview-->
+      <input [disabled]="!cardForm.valid" type="submit" value="Generate" class="btn btn-primary" />
+    </form>
+  </div>
+</div>
+<div  class ="doNotPrint" [style.display]="isPrint? 'block': 'none'">
+  <button class="btn btn-info" (click) ="onPrint()" style="padding-left : 20px; padding-right: 20px; margin-left:20px; margin-bottom:5px;">Print</button>
+</div>
+<div style="padding-left: 10px; float:left" [style.display]="isPrint? 'block': 'none'">
+  <div *ngFor="let issue of story?.issues;" class="sprintCard">
+    <div class="sprintCardDiv" [style.background-color]="issue.fields.issuetype.name == 'Defect' ? defectColorValue : (issue.fields.issuetype.name == 'Sub-Task' || issue.fields.issuetype.name == 'Technical Task') ? subtaskColorValue: userstoryColorValue ">
+      <img class="sprintCardImg" [src]="issue.fields.issuetype.name == 'Defect' ? 'assets\\img\\Defect.png': (issue.fields.issuetype.name == 'Sub-Task' || issue.fields.issuetype.name == 'Technical Task') ? 'assets\\img\\SubTask.png':'assets\\img\\UserStory.png'">
+      <h1 class="sprintCardH1">{{resolveFieldValue(issue,storyFields,0)}}</h1>
+      <h2 class="sprintCardH2">{{resolveFieldValue(issue,storyFields,1)}}</h2>
+      <h3 *ngFor="let field of (storyFields ? storyFields.slice(2,length): []);" class="sprintCardH3">{{resolveFieldValueFromString(issue,field)}}</h3>
+    </div>
+  </div>
+</div>

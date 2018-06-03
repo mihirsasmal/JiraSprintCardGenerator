@@ -1,0 +1,19 @@
+{
+  "name": "jiraweb",
+  "version": "1.0.0",
+  "description": "Jira Web tools to query and print cards",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Mihir Sasmal",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3",
+    "forever": "^0.15.3",
+    "request": "^2.85.0"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.7.4"
+  }
+}
